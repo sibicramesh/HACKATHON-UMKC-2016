@@ -1,0 +1,273 @@
+<!doctype html>
+<html ng-app>
+<head>
+  <title>Robust Resume Maker</title>
+  <link rel="icon" href="img/resume.gif" type="image/gif">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
+  <script src="pdf.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jspdf/0.9.0rc1/jspdf.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/3.6.0/firebase.js"></script>
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html">
+  <link rel="stylesheet" href="bootstrap-3.3.7-dist/css/bootstrap.min.css">
+  <link href="css/style.css" rel="stylesheet">
+
+</head>
+
+<body  class="scroll"ng-controller="GitHub">
+<form class="form1">
+
+<script type="in/Login">Welcome, <?js= firstName ?> <?js= lastName ?></script></form>
+<form class="form2">
+
+<div class="fb-login-button" data-scope="user_work_history,user_education_history
+" data-max-rows="1" data-size="medium" data-show-faces="false" data-auto-logout-link="true"></div>
+</form>
+
+<div id="w">
+  <div id="one">
+<form class="form3">
+
+  <input type="text" id="ghusername" ng-model="username" placeholder="Enter Github username">
+  <input type="text" id="code" placeholder="Enter Codewars username">
+  <button id='load' class="button button 1" onclick="codewars() " ng-click="getGitInfo()" >Get Details</button>
+  </form>
+
+  <button id='coding' class="btn btn-info btn-block" onclick="codewars_Iframe()" align="center">Try Coding Challenge</button>
+  <div id="iframe">
+    <!--<iframe height="700px" width="100%" src="https://www.codewars.com/users/{{codename}}"></iframe>-->
+  </div>
+  </div>
+  <div id="pdf">
+  <div class="card"  style="font-family: Comic Sans MS">
+    <div align="center"><h3><hr>Personal Information</h3></div>
+    <p id="linkedin"></p>
+    <div id="pic"></div>
+    <div id="demo"></div>
+    <p ng-show="loaded">
+    <div align="center"><h3><hr>GitHub</h3></div>
+     <b><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GitHub URL</b>:&nbsp;&nbsp<a href="{{user.html_url}}" target="_blank">{{user.html_url}}</a>
+    </p>
+
+    <p ng-show="reposFound">
+     <b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Repositories</b>:&nbsp;&nbsp;
+      <span ng-repeat="repo in repos"  bn-repeat-delimiter=",">
+            <a href="{{repo.html_url}}" target="_blank"> {{repo.name}}&nbsp;&nbsp;</a>
+        </span>
+    </p>
+    <br>
+    <div align="center"><h3><hr>Coding Challanges Report</h3></div>
+    <p id="codewars"></p>
+  </div>
+  </div>
+
+  <br>
+  <form class="form5">
+
+    <div id="editor"></div>
+    <div id="two">
+    <button class="btn btn-default" id="generation"  onclick="resume()">Generate RESUME here</button>
+  <button class="btn btn-default" id="getpdf"  >Generate PDF</button>
+    </div>
+    <br>
+  <label class="btn btn-default btn-file">Upload Resume
+  <input  type="file" id="filebutton"  style="display: none;"></label>
+
+  </form>
+
+<script>
+  var doc = new jsPDF();
+  var specialElementHandlers = {
+    '#editor': function (element, renderer) {
+      return true;
+    }
+  };
+
+  $('#getpdf').click(function () {
+    doc.fromHTML($('#pdf').html(), 15, 15, {
+      'width': 170,
+      'elementHandlers': specialElementHandlers
+    });
+    doc.save('sample-file.pdf');
+  });
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyBHAwpENvxtlSKbqEagqT_yOOOPSzMUTvY",
+    authDomain: "my-project-1473014988076.firebaseapp.com",
+    databaseURL: "https://my-project-1473014988076.firebaseio.com",
+    storageBucket: "my-project-1473014988076.appspot.com",
+    messagingSenderId: "303130154051"
+  };
+  firebase.initializeApp(config);
+  var fileup=document.getElementById('filebutton')
+
+  fileup.addEventListener('change',function (e) {
+    var file = e.target.files[0];
+    console.log(file)
+    var storageref = firebase.storage().ref('resumes/' + file.name);
+    storageref.put(file);
+  })
+
+</script>
+
+<script>
+  function GitHub($scope, $http) {
+    $scope.getGitInfo = function () {
+      $scope.userNotFound = false;
+      $scope.loaded = false;
+      $http.get("https://api.github.com/users/" + $scope.username)
+        .success(function (data) {
+          if (data.name == "") data.name = data.login;
+          $scope.user = data;
+          $scope.loaded = true;
+        })
+        .error(function () {
+          $scope.userNotFound = true;
+        });
+      $http.get("https://api.github.com/users/" + $scope.username + "/repos").success(function (data) {
+        $scope.repos = data;
+        $scope.reposFound = data.length > 0;
+
+      });
+    }
+
+  }
+</script>
+
+<script type="text/javascript" src="//platform.linkedin.com/in.js">
+  api_key: 77oj7at8lhxim4
+  onLoad: OnLinkedInFrameworkLoad
+  authorize: true
+</script>
+
+<script>
+  function OnLinkedInFrameworkLoad() {
+    IN.Event.on(IN, "auth", getProfileData());
+  }
+  function onSuccess(data) {
+    var firstName=data.firstName;
+    var lastName=data.lastName;
+    var photo=data.pictureUrl;
+    var email=data.emailAddress;
+    var connections=data.numConnections;
+    var industry=data.industry;
+    var location=data.location.name;
+
+    var op=" <b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Picture: </b><img src="+photo+"><b><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FirstName</b>:"+firstName+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br><br><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LastName:</b> "+lastName+"<br><br><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Email Address:</b> "
+      +email+"<br><br><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LinkedIn Connections: </b>"+connections+"<br><br><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Location: </b>"+location+"<br><br><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Industry:</b>"+industry+"<br>";
+    document.getElementById("pic").innerHTML=" "
+
+    document.getElementById("linkedin").innerHTML=op;
+  }
+  function onError(error) {
+    console.log(error);
+  }
+  function getProfileData() {
+    IN.API.Raw("/people/~:(first-name,last-name,num-connections,picture-url,location,positions,industry,email-address)").result(onSuccess).error(onError);
+  }
+  function resume() {
+      document.getElementById("one").innerHTML='';
+      document.getElementById("two").innerHTML='';
+  }
+  function codewars_Iframe()
+  {
+      document.getElementById("iframe").innerHTML="<iframe height=\'700px\' width=\'100%\' src=\'https://www.codewars.com\'></iframe>";
+  }
+  function codewars() {
+      var cw = document.getElementById("code").value;
+      var URL_val = "https://www.codewars.com/users/"+cw;
+      document.getElementById("iframe").innerHTML = "<iframe height=\'700px\' width=\'100%\' src=\'"+URL_val+" \'></iframe>";
+    var ip=cw;
+    var xmlhttp = new XMLHttpRequest();
+    var url = "https://www.codewars.com/api/v1/users/"+ip;
+    xmlhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        var myArr = JSON.parse(this.responseText);
+        myFunction(myArr);
+      }
+    };
+    xmlhttp.open("GET", url, true);
+    xmlhttp.send();
+    function myFunction(arr) {
+      console.log(arr);
+      var op="<b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Skills</b>: "+arr.skills.join()+"<br><br><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Total Challenges Completed</b>: "+arr.codeChallenges.totalCompleted+"<hr>";
+      document.getElementById("codewars").innerHTML=op;
+    }
+
+  }
+</script>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : 531750070362730,
+      xfbml      : true,
+      version    : 'v2.0'
+    });
+  };
+
+  (function(d, s, id){
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) {return;}
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+
+
+  function basicAPIRequest() {
+    FB.api('/me',
+      {fields: "work,education"},
+      function(response) {
+        console.log('API response', response);
+        var work=response.work;
+        var education=response.education;
+        var w=work.length;
+        var e=education.length;
+        var exp="";
+        var edu="";
+        exp+="<div align='center'><h3><hr>Work Experience</h3></div>"
+        for(i=0;i<w;i++) {
+          exp += "<br><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Company Name</b>: "+response.work[i].employer.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+          exp += "<b>Start Date</b>: "+response.work[i].start_date+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+          exp += "<b>End Date</b>: "+response.work[i].end_date+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+          exp += "<b>Location</b>: "+response.work[i].location.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+          exp += "<b>Position Name</b>: "+response.work[i].position.name + "<br>"
+        }
+        exp+="<br>";
+        edu+="<div align='center'><h3><hr>Education Information</h3></div>"
+        for(i=0;i<e;i++) {
+          edu += "<br><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;School Name</b>: "+response.education[i].school.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+          edu += "<b>School Type</b>: "+response.education[i].type+"<br>"
+
+        }
+        document.getElementById("demo").innerHTML=exp+edu;
+        console.log(exp);
+      }
+    );
+  }
+  jQuery(document).ready(function(){
+    jQuery("#load").click(function(e){
+      if(typeof(FB) == "undefined") {
+        alert("Facebook SDK not yet loaded please wait.")
+      }
+      FB.getLoginStatus(function(response) {
+        if (response.status === 'connected') {
+          console.log('Logged in.');
+          basicAPIRequest();
+
+        }
+        else {
+          FB.login();
+        }
+      });
+    });
+
+  });
+</script>
+
+
+
+</body>
+</html>

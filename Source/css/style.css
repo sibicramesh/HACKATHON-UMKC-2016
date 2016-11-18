@@ -1,0 +1,73 @@
+input[type="text"] {
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  padding: 12px 20px;
+  margin: 8px 0;
+  border: 0.5px #a13736;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.button
+{
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  padding: 12px 20px;
+  margin: 8px 0;
+  border: 0.5px #a13736;
+  border-radius: 4px;
+}
+
+
+.cd
+{
+
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  padding: 12px 20px;
+  margin: 8px 0;
+  border-radius: 4px;
+}
+
+input[type="file"] {
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  padding: 12px 20px;
+  margin: 8px 0;
+  border-radius: 4px;
+}
+
+
+
+.form1
+{
+  float:left;
+}
+.form2
+{
+  float:right;
+}
+.form3
+{
+
+  text-align: center;
+}
+.form5
+{
+  text-align: center;
+}
+.scroll
+{
+
+  background: url("../img/home.jpg") no-repeat center center fixed;
+
+;
+}
+.card
+{
+background-color: lightgrey;
+  border-color:  black;
+  border-radius: 4px;
+  width: 100%;
+  height:60%;
+}
